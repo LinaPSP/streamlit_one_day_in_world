@@ -32,111 +32,138 @@ REQUEST_HEADERS = {
 }
 
 
-st.set_page_config(page_title="Un dia como hoy", page_icon=":calendar:", layout="centered")
-
-# Usa colores del tema nativo de Streamlit y solo ajusta contraste local.
-css_vars = """
-:root {
-    --app-bg: transparent;
-    --text-main: var(--text-color);
-    --text-muted: color-mix(in srgb, var(--text-color) 72%, transparent);
-    --hero-title: var(--text-color);
-    --card-bg: color-mix(in srgb, var(--secondary-background-color) 82%, var(--background-color));
-    --card-border: color-mix(in srgb, var(--text-color) 18%, transparent);
-    --btn-bg: var(--primary-color);
-    --btn-fg: #ffffff;
-    --btn-hover: color-mix(in srgb, var(--primary-color) 80%, white);
-    --link-color: var(--primary-color);
-}
-"""
+st.set_page_config(page_title="Un día como hoy", page_icon="🌍", layout="centered")
 
 st.markdown(
     """
     <style>
-    """
-    + css_vars
-    + """
-    .stApp {
-        background: var(--app-bg);
-        color: var(--text-main);
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+
+    html, body, [class*="css"] {
+        font-family: 'Inter', sans-serif;
     }
+
+    /* Fondo degradado sutil */
     [data-testid="stAppViewContainer"] {
-        background: transparent;
+        background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+        min-height: 100vh;
     }
-    [data-testid="stHeader"] {
-        background: transparent;
-    }
-    [data-testid="stToolbar"] {
-        right: 0.75rem;
-    }
-    [data-testid="stMarkdownContainer"] p,
-    [data-testid="stMarkdownContainer"] li,
-    [data-testid="stMarkdownContainer"] label,
-    .stSlider label,
-    .stTabs [data-baseweb="tab"] {
-        color: var(--text-main);
-    }
-    .stButton > button {
-        background: var(--btn-bg);
-        color: var(--btn-fg);
-        border: 1px solid var(--btn-bg);
-        border-radius: 999px;
-        font-weight: 700;
-    }
-    .stButton > button:hover {
-        background: var(--btn-hover);
-        border-color: var(--btn-hover);
-        color: #0b1020;
-    }
-    .stButton > button:focus {
-        box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--btn-bg) 40%, transparent);
-    }
+    [data-testid="stHeader"] { background: transparent; }
+
+    /* Hero */
     .hero {
-        padding: 0.5rem 0 1.5rem 0;
+        text-align: center;
+        padding: 2.5rem 0 1.5rem;
     }
+    .hero .emoji { font-size: 3rem; line-height: 1; }
     .hero h1 {
-        font-size: 3rem;
-        line-height: 1;
-        margin: 0;
-        color: var(--hero-title);
+        font-size: 3.2rem;
+        font-weight: 900;
+        background: linear-gradient(90deg, #a78bfa, #60a5fa, #34d399);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin: 0.3rem 0 0.2rem;
+        line-height: 1.1;
     }
     .hero p {
-        margin: 0.35rem 0 0;
-        font-size: 1.1rem;
-        color: var(--text-muted);
+        color: rgba(255,255,255,0.55);
+        font-size: 1rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin: 0;
     }
+
+    /* Botones */
+    .stButton > button {
+        background: linear-gradient(135deg, #7c3aed, #4f46e5);
+        color: #fff;
+        border: none;
+        border-radius: 999px;
+        font-weight: 700;
+        font-size: 0.95rem;
+        padding: 0.55rem 1.4rem;
+        transition: transform 0.15s, box-shadow 0.15s;
+        box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4);
+    }
+    .stButton > button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(124, 58, 237, 0.55);
+        color: #fff;
+    }
+    .stButton > button:active { transform: translateY(0); }
+
+    /* Slider */
+    .stSlider label, .stSlider p { color: rgba(255,255,255,0.7) !important; }
+    [data-testid="stSlider"] [data-baseweb="slider"] [role="slider"] {
+        background: #7c3aed;
+    }
+
+    /* Tabs */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 0.5rem;
+        background: rgba(255,255,255,0.05);
+        border-radius: 999px;
+        padding: 0.3rem;
+    }
+    .stTabs [data-baseweb="tab"] {
+        border-radius: 999px;
+        color: rgba(255,255,255,0.6);
+        font-weight: 600;
+        padding: 0.4rem 1.2rem;
+        border: none;
+    }
+    .stTabs [aria-selected="true"] {
+        background: linear-gradient(135deg, #7c3aed, #4f46e5) !important;
+        color: #fff !important;
+    }
+
+    /* Cards */
     .evento-card {
-        background: var(--card-bg);
-        border: 1px solid var(--card-border);
-        border-radius: 18px;
-        padding: 1rem 1.1rem;
-        margin-bottom: 0.85rem;
-        box-shadow: 0 16px 32px rgba(0, 0, 0, 0.12);
+        background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 16px;
+        padding: 1.1rem 1.3rem;
+        margin-bottom: 0.9rem;
+        backdrop-filter: blur(10px);
+        transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .evento-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 30px rgba(0,0,0,0.3);
+        border-color: rgba(167,139,250,0.35);
     }
     .evento-card .anio {
-        font-size: 1.55rem;
-        font-weight: 700;
-        color: var(--link-color);
-        margin-bottom: 0.45rem;
+        font-size: 1.4rem;
+        font-weight: 800;
+        background: linear-gradient(90deg, #a78bfa, #60a5fa);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 0.4rem;
     }
     .evento-card .descripcion {
-        color: var(--text-main);
-        line-height: 1.5;
-        margin-bottom: 0.6rem;
+        color: rgba(255,255,255,0.85);
+        line-height: 1.6;
+        font-size: 0.95rem;
+        margin-bottom: 0.55rem;
     }
     .evento-card a {
-        color: var(--link-color);
+        color: #a78bfa;
         text-decoration: none;
         font-weight: 600;
+        font-size: 0.88rem;
     }
-    .evento-card a:hover {
-        text-decoration: underline;
-    }
-    [data-testid="stInfo"] {
-        color: var(--text-main);
-    }
-    [data-testid="stAlertContentError"] {
-        color: var(--text-main);
+    .evento-card a:hover { text-decoration: underline; color: #c4b5fd; }
+
+    /* Info / error */
+    [data-testid="stInfo"] { color: rgba(255,255,255,0.8) !important; }
+    [data-testid="stAlertContentError"] { color: rgba(255,255,255,0.8) !important; }
+
+    /* Texto general */
+    [data-testid="stMarkdownContainer"] p,
+    [data-testid="stMarkdownContainer"] li {
+        color: rgba(255,255,255,0.8);
     }
     </style>
     """,
@@ -216,8 +243,9 @@ titulo = f"{dia} de {SPANISH_MONTHS[mes]}"
 st.markdown(
     f"""
     <div class="hero">
+        <div class="emoji">🌍</div>
         <h1>{titulo}</h1>
-        <p>esto paso en la historia</p>
+        <p>esto pasó en la historia</p>
     </div>
     """,
     unsafe_allow_html=True,
