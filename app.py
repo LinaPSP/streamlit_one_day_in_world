@@ -267,6 +267,17 @@ with col_random:
         st.session_state.fecha = datetime.date(2024, mes_r, dia_r)
         st.session_state.modo_random = True
 
+fecha_elegida = st.date_input(
+    "O elige una fecha",
+    value=st.session_state.fecha,
+    format="DD/MM/YYYY",
+    label_visibility="collapsed",
+)
+if fecha_elegida != st.session_state.fecha:
+    st.session_state.fecha = fecha_elegida
+    st.session_state.modo_random = False
+    st.rerun()
+
 try:
     datos = obtener_datos(mes, dia)
 except Exception:
