@@ -22,12 +22,75 @@ SPANISH_MONTHS = {
     12: "diciembre",
 }
 
+REQUEST_HEADERS = {
+    "User-Agent": (
+        "un-dia-como-hoy/1.0 "
+        "(https://apponedayinworld.streamlit.app/; "
+        "https://github.com/LinaPSP/streamlit_one_day_in_world)"
+    ),
+    "Accept": "application/json",
+}
+
 
 st.set_page_config(page_title="Un dia como hoy", page_icon=":calendar:", layout="centered")
+
+# Usa colores del tema nativo de Streamlit y solo ajusta contraste local.
+css_vars = """
+:root {
+    --app-bg: transparent;
+    --text-main: var(--text-color);
+    --text-muted: color-mix(in srgb, var(--text-color) 72%, transparent);
+    --hero-title: var(--text-color);
+    --card-bg: color-mix(in srgb, var(--secondary-background-color) 82%, var(--background-color));
+    --card-border: color-mix(in srgb, var(--text-color) 18%, transparent);
+    --btn-bg: var(--primary-color);
+    --btn-fg: #ffffff;
+    --btn-hover: color-mix(in srgb, var(--primary-color) 80%, white);
+    --link-color: var(--primary-color);
+}
+"""
 
 st.markdown(
     """
     <style>
+    """
+    + css_vars
+    + """
+    .stApp {
+        background: var(--app-bg);
+        color: var(--text-main);
+    }
+    [data-testid="stAppViewContainer"] {
+        background: transparent;
+    }
+    [data-testid="stHeader"] {
+        background: transparent;
+    }
+    [data-testid="stToolbar"] {
+        right: 0.75rem;
+    }
+    [data-testid="stMarkdownContainer"] p,
+    [data-testid="stMarkdownContainer"] li,
+    [data-testid="stMarkdownContainer"] label,
+    .stSlider label,
+    .stTabs [data-baseweb="tab"] {
+        color: var(--text-main);
+    }
+    .stButton > button {
+        background: var(--btn-bg);
+        color: var(--btn-fg);
+        border: 1px solid var(--btn-bg);
+        border-radius: 999px;
+        font-weight: 700;
+    }
+    .stButton > button:hover {
+        background: var(--btn-hover);
+        border-color: var(--btn-hover);
+        color: #0b1020;
+    }
+    .stButton > button:focus {
+        box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--btn-bg) 40%, transparent);
+    }
     .hero {
         padding: 0.5rem 0 1.5rem 0;
     }
@@ -35,39 +98,45 @@ st.markdown(
         font-size: 3rem;
         line-height: 1;
         margin: 0;
-        color: #102542;
+        color: var(--hero-title);
     }
     .hero p {
         margin: 0.35rem 0 0;
         font-size: 1.1rem;
-        color: #5c6b73;
+        color: var(--text-muted);
     }
     .evento-card {
-        background: linear-gradient(180deg, #ffffff 0%, #f6f8fb 100%);
-        border: 1px solid #d9e2ec;
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
         border-radius: 18px;
         padding: 1rem 1.1rem;
         margin-bottom: 0.85rem;
-        box-shadow: 0 10px 25px rgba(16, 37, 66, 0.06);
+        box-shadow: 0 16px 32px rgba(0, 0, 0, 0.12);
     }
     .evento-card .anio {
         font-size: 1.55rem;
         font-weight: 700;
-        color: #0b6e4f;
+        color: var(--link-color);
         margin-bottom: 0.45rem;
     }
     .evento-card .descripcion {
-        color: #1f2933;
+        color: var(--text-main);
         line-height: 1.5;
         margin-bottom: 0.6rem;
     }
     .evento-card a {
-        color: #0f5cc0;
+        color: var(--link-color);
         text-decoration: none;
         font-weight: 600;
     }
     .evento-card a:hover {
         text-decoration: underline;
+    }
+    [data-testid="stInfo"] {
+        color: var(--text-main);
+    }
+    [data-testid="stAlertContentError"] {
+        color: var(--text-main);
     }
     </style>
     """,
@@ -77,14 +146,27 @@ st.markdown(
 
 @st.cache_data(ttl=3600)
 def obtener_datos(mes: int, dia: int) -> dict:
-    # Consulta la API y devuelve un diccionario vacio si ocurre un error.
-    url = f"https://api.wikimedia.org/feed/v1/wikipedia/es/onthisday/all/{mes}/{dia}"
-    try:
-        response = requests.get(url, timeout=5)
-        response.raise_for_status()
-        return response.json()
-    except Exception:
-        return {}
+    # Cachea solo respuestas exitosas. Si falla, se levanta error y no se cachea.
+    urls = [
+        f"https://api.wikimedia.org/feed/v1/wikipedia/es/onthisday/all/{mes}/{dia}",
+        f"https://es.wikipedia.org/api/rest_v1/feed/onthisday/all/{mes:02d}/{dia:02d}",
+    ]
+    ultimo_error = None
+
+    for url in urls:
+        try:
+            response = requests.get(url, headers=REQUEST_HEADERS, timeout=8)
+            response.raise_for_status()
+            data = response.json()
+            if isinstance(data, dict) and (
+                data.get("events") or data.get("births") or data.get("deaths")
+            ):
+                return data
+            ultimo_error = RuntimeError("La API respondio sin contenido util.")
+        except Exception as exc:
+            ultimo_error = exc
+
+    raise RuntimeError(f"No fue posible obtener datos de Wikimedia: {ultimo_error}")
 
 
 def filtrar_por_anio(items: list, anio_min: int, anio_max: int) -> list:
@@ -126,23 +208,6 @@ if "modo_random" not in st.session_state:
     st.session_state.modo_random = False
 
 
-def ir_a_hoy() -> None:
-    # Restablece la fecha actual y fuerza el refresco de la interfaz.
-    st.session_state.fecha = datetime.date.today()
-    st.session_state.modo_random = False
-    st.rerun()
-
-
-def fecha_aleatoria() -> None:
-    # Genera un mes y un dia validos para construir una fecha aleatoria.
-    mes_r = random.randint(1, 12)
-    max_dia = calendar.monthrange(2024, mes_r)[1]
-    dia_r = random.randint(1, max_dia)
-    st.session_state.fecha = datetime.date(2024, mes_r, dia_r)
-    st.session_state.modo_random = True
-    st.rerun()
-
-
 fecha = st.session_state.fecha
 mes = fecha.month
 dia = fecha.day
@@ -161,16 +226,26 @@ st.markdown(
 col_hoy, col_random = st.columns(2)
 
 with col_hoy:
-    st.button("Hoy", use_container_width=True, on_click=ir_a_hoy)
+    if st.button("Hoy", use_container_width=True):
+        st.session_state.fecha = datetime.date.today()
+        st.session_state.modo_random = False
 
 with col_random:
-    st.button("🎲 Sorprendeme", use_container_width=True, on_click=fecha_aleatoria)
+    if st.button("🎲 Sorprendeme", use_container_width=True):
+        # Genera un mes y un dia validos para construir una fecha aleatoria.
+        mes_r = random.randint(1, 12)
+        max_dia = calendar.monthrange(2024, mes_r)[1]
+        dia_r = random.randint(1, max_dia)
+        st.session_state.fecha = datetime.date(2024, mes_r, dia_r)
+        st.session_state.modo_random = True
 
-datos = obtener_datos(mes, dia)
-
-# Si la API no responde, se informa al usuario y se detiene la ejecucion.
-if not datos:
+try:
+    datos = obtener_datos(mes, dia)
+except Exception:
     st.error("No se pudieron cargar los datos de Wikimedia. Revisa tu conexion e intenta de nuevo.")
+    if st.button("Reintentar carga", use_container_width=True):
+        obtener_datos.clear()
+        st.rerun()
     st.stop()
 
 todos_los_items = []
