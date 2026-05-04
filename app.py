@@ -165,6 +165,20 @@ st.markdown(
     [data-testid="stMarkdownContainer"] li {
         color: rgba(255,255,255,0.8);
     }
+
+    /* Date input */
+    [data-testid="stDateInput"] input {
+        background: rgba(255,255,255,0.06) !important;
+        border: 1px solid rgba(255,255,255,0.15) !important;
+        border-radius: 999px !important;
+        color: #fff !important;
+        text-align: center;
+        font-weight: 600;
+    }
+    [data-testid="stDateInput"] input:focus {
+        border-color: #7c3aed !important;
+        box-shadow: 0 0 0 2px rgba(124,58,237,0.35) !important;
+    }
     </style>
     """,
     unsafe_allow_html=True,
@@ -234,6 +248,33 @@ if "fecha" not in st.session_state:
 if "modo_random" not in st.session_state:
     st.session_state.modo_random = False
 
+col_hoy, col_random = st.columns(2)
+
+with col_hoy:
+    if st.button("Hoy", use_container_width=True):
+        st.session_state.fecha = datetime.date.today()
+        st.session_state.modo_random = False
+        st.rerun()
+
+with col_random:
+    if st.button("🎲 Sorprendeme", use_container_width=True):
+        mes_r = random.randint(1, 12)
+        max_dia = calendar.monthrange(2024, mes_r)[1]
+        dia_r = random.randint(1, max_dia)
+        st.session_state.fecha = datetime.date(2024, mes_r, dia_r)
+        st.session_state.modo_random = True
+        st.rerun()
+
+fecha_elegida = st.date_input(
+    "fecha",
+    value=st.session_state.fecha,
+    format="DD/MM/YYYY",
+    label_visibility="collapsed",
+)
+if fecha_elegida != st.session_state.fecha:
+    st.session_state.fecha = fecha_elegida
+    st.session_state.modo_random = False
+    st.rerun()
 
 fecha = st.session_state.fecha
 mes = fecha.month
@@ -250,33 +291,6 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
-
-col_hoy, col_random = st.columns(2)
-
-with col_hoy:
-    if st.button("Hoy", use_container_width=True):
-        st.session_state.fecha = datetime.date.today()
-        st.session_state.modo_random = False
-
-with col_random:
-    if st.button("🎲 Sorprendeme", use_container_width=True):
-        # Genera un mes y un dia validos para construir una fecha aleatoria.
-        mes_r = random.randint(1, 12)
-        max_dia = calendar.monthrange(2024, mes_r)[1]
-        dia_r = random.randint(1, max_dia)
-        st.session_state.fecha = datetime.date(2024, mes_r, dia_r)
-        st.session_state.modo_random = True
-
-fecha_elegida = st.date_input(
-    "O elige una fecha",
-    value=st.session_state.fecha,
-    format="DD/MM/YYYY",
-    label_visibility="collapsed",
-)
-if fecha_elegida != st.session_state.fecha:
-    st.session_state.fecha = fecha_elegida
-    st.session_state.modo_random = False
-    st.rerun()
 
 try:
     datos = obtener_datos(mes, dia)
