@@ -37,147 +37,216 @@ st.set_page_config(page_title="Un día como hoy", page_icon="🌍", layout="cent
 st.markdown(
     """
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap');
 
-    html, body, [class*="css"] {
-        font-family: 'Inter', sans-serif;
+    :root {
+        --ink:      #1a1410;
+        --parchment:#f5efe3;
+        --aged:     #e8dcc8;
+        --gold:     #b8963e;
+        --gold-lt:  #d4af5a;
+        --rust:     #8b3a2a;
+        --muted:    #6b5c44;
+        --rule:     #c9b88a;
     }
 
-    /* Fondo degradado sutil */
+    html, body, [class*="css"] {
+        font-family: 'Source Serif 4', Georgia, serif;
+    }
+
     [data-testid="stAppViewContainer"] {
-        background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+        background-color: var(--parchment);
+        background-image:
+            radial-gradient(ellipse at 15% 20%, rgba(184,150,62,0.07) 0%, transparent 55%),
+            radial-gradient(ellipse at 85% 80%, rgba(139,58,42,0.06) 0%, transparent 55%),
+            url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Crect width='60' height='60' fill='none'/%3E%3Cpath d='M0 30 H60 M30 0 V60' stroke='%23c9b88a' stroke-width='0.3' opacity='0.4'/%3E%3C/svg%3E");
         min-height: 100vh;
     }
     [data-testid="stHeader"] { background: transparent; }
+    [data-testid="stMainBlockContainer"] { padding-top: 1rem; }
 
-    /* Hero */
+    /* ── HERO ── */
     .hero {
         text-align: center;
-        padding: 2.5rem 0 1.5rem;
+        padding: 2rem 0 0.5rem;
+        border-bottom: 2px solid var(--rule);
+        margin-bottom: 1.6rem;
+        position: relative;
     }
-    .hero .emoji { font-size: 3rem; line-height: 1; }
-    .hero h1 {
-        font-size: 3.2rem;
-        font-weight: 900;
-        background: linear-gradient(90deg, #a78bfa, #60a5fa, #34d399);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        margin: 0.3rem 0 0.2rem;
-        line-height: 1.1;
+    .hero::before {
+        content: '◆  ◆  ◆';
+        display: block;
+        color: var(--gold);
+        font-size: 0.65rem;
+        letter-spacing: 0.5em;
+        margin-bottom: 0.8rem;
     }
-    .hero p {
-        color: rgba(255,255,255,0.55);
-        font-size: 1rem;
-        letter-spacing: 0.08em;
+    .hero .kicker {
+        font-family: 'Source Serif 4', serif;
+        font-size: 0.7rem;
+        font-weight: 600;
+        letter-spacing: 0.25em;
         text-transform: uppercase;
-        margin: 0;
+        color: var(--muted);
+        margin-bottom: 0.5rem;
+    }
+    .hero h1 {
+        font-family: 'Playfair Display', Georgia, serif;
+        font-size: clamp(2.4rem, 6vw, 4rem);
+        font-weight: 900;
+        font-style: italic;
+        color: var(--ink);
+        margin: 0 0 0.2rem;
+        line-height: 1.05;
+    }
+    .hero .sub {
+        font-family: 'Source Serif 4', serif;
+        font-size: 0.8rem;
+        font-style: italic;
+        color: var(--muted);
+        letter-spacing: 0.06em;
+    }
+    .hero::after {
+        content: '';
+        display: block;
+        width: 80px;
+        height: 1px;
+        background: var(--gold);
+        margin: 1.2rem auto 0;
     }
 
-    /* Botones */
+    /* ── BOTONES ── */
     .stButton > button {
-        background: linear-gradient(135deg, #7c3aed, #4f46e5);
-        color: #fff;
-        border: none;
-        border-radius: 999px;
-        font-weight: 700;
-        font-size: 0.95rem;
-        padding: 0.55rem 1.4rem;
-        transition: transform 0.15s, box-shadow 0.15s;
-        box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4);
+        font-family: 'Source Serif 4', serif;
+        font-weight: 600;
+        font-size: 0.82rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--ink) !important;
+        background: transparent;
+        border: 1.5px solid var(--gold);
+        border-radius: 2px;
+        padding: 0.5rem 1.2rem;
+        transition: background 0.2s, color 0.2s;
+        box-shadow: none;
     }
     .stButton > button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(124, 58, 237, 0.55);
-        color: #fff;
+        background: var(--gold) !important;
+        color: var(--parchment) !important;
+        border-color: var(--gold) !important;
+        transform: none;
+        box-shadow: none;
     }
-    .stButton > button:active { transform: translateY(0); }
+    .stButton > button:active { opacity: 0.85; }
 
-    /* Slider */
-    .stSlider label, .stSlider p { color: rgba(255,255,255,0.7) !important; }
-    [data-testid="stSlider"] [data-baseweb="slider"] [role="slider"] {
-        background: #7c3aed;
+    /* ── SLIDER ── */
+    .stSlider label p, .stSlider > label {
+        font-family: 'Source Serif 4', serif !important;
+        color: var(--muted) !important;
+        font-size: 0.78rem !important;
+        letter-spacing: 0.1em !important;
+        text-transform: uppercase !important;
     }
 
-    /* Tabs */
+    /* ── TABS ── */
     .stTabs [data-baseweb="tab-list"] {
-        gap: 0.5rem;
-        background: rgba(255,255,255,0.05);
-        border-radius: 999px;
-        padding: 0.3rem;
+        gap: 0;
+        background: transparent;
+        border-bottom: 1.5px solid var(--rule);
+        border-radius: 0;
+        padding: 0;
     }
     .stTabs [data-baseweb="tab"] {
-        border-radius: 999px;
-        color: rgba(255,255,255,0.6);
+        font-family: 'Source Serif 4', serif;
+        font-size: 0.78rem;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
         font-weight: 600;
-        padding: 0.4rem 1.2rem;
+        color: var(--muted);
+        border-radius: 0;
         border: none;
+        padding: 0.5rem 1.4rem;
+        background: transparent;
+        border-bottom: 2px solid transparent;
+        margin-bottom: -1.5px;
     }
     .stTabs [aria-selected="true"] {
-        background: linear-gradient(135deg, #7c3aed, #4f46e5) !important;
-        color: #fff !important;
+        color: var(--ink) !important;
+        background: transparent !important;
+        border-bottom: 2px solid var(--gold) !important;
     }
 
-    /* Cards */
+    /* ── CARDS ── */
     .evento-card {
-        background: rgba(255,255,255,0.06);
-        border: 1px solid rgba(255,255,255,0.1);
-        border-radius: 16px;
-        padding: 1.1rem 1.3rem;
-        margin-bottom: 0.9rem;
-        backdrop-filter: blur(10px);
-        transition: transform 0.15s, box-shadow 0.15s;
+        background: rgba(255,255,255,0.55);
+        border: 1px solid var(--rule);
+        border-left: 3px solid var(--gold);
+        border-radius: 0;
+        padding: 1rem 1.2rem 0.9rem;
+        margin-bottom: 0.8rem;
+        transition: border-left-color 0.2s, background 0.2s;
     }
     .evento-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 12px 30px rgba(0,0,0,0.3);
-        border-color: rgba(167,139,250,0.35);
+        background: rgba(255,255,255,0.85);
+        border-left-color: var(--rust);
+        transform: none;
+        box-shadow: 2px 2px 8px rgba(26,20,16,0.08);
     }
     .evento-card .anio {
-        font-size: 1.4rem;
-        font-weight: 800;
-        background: linear-gradient(90deg, #a78bfa, #60a5fa);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        margin-bottom: 0.4rem;
+        font-family: 'Playfair Display', Georgia, serif;
+        font-size: 1.5rem;
+        font-weight: 700;
+        font-style: italic;
+        color: var(--gold);
+        margin-bottom: 0.3rem;
+        line-height: 1;
     }
     .evento-card .descripcion {
-        color: rgba(255,255,255,0.85);
-        line-height: 1.6;
-        font-size: 0.95rem;
-        margin-bottom: 0.55rem;
+        font-family: 'Source Serif 4', serif;
+        color: var(--ink);
+        line-height: 1.65;
+        font-size: 0.93rem;
+        margin-bottom: 0.5rem;
     }
     .evento-card a {
-        color: #a78bfa;
+        font-family: 'Source Serif 4', serif;
+        color: var(--rust);
         text-decoration: none;
-        font-weight: 600;
-        font-size: 0.88rem;
+        font-size: 0.8rem;
+        font-style: italic;
+        letter-spacing: 0.04em;
     }
-    .evento-card a:hover { text-decoration: underline; color: #c4b5fd; }
+    .evento-card a:hover { text-decoration: underline; color: var(--gold); }
 
-    /* Info / error */
-    [data-testid="stInfo"] { color: rgba(255,255,255,0.8) !important; }
-    [data-testid="stAlertContentError"] { color: rgba(255,255,255,0.8) !important; }
+    /* ── ALERTS ── */
+    [data-testid="stInfo"],
+    [data-testid="stAlertContentError"] {
+        font-family: 'Source Serif 4', serif !important;
+        color: var(--muted) !important;
+        font-style: italic;
+    }
 
-    /* Texto general */
+    /* ── TEXTO GENERAL ── */
     [data-testid="stMarkdownContainer"] p,
     [data-testid="stMarkdownContainer"] li {
-        color: rgba(255,255,255,0.8);
+        color: var(--ink);
+        font-family: 'Source Serif 4', serif;
     }
 
-    /* Date input */
+    /* ── DATE INPUT ── */
     [data-testid="stDateInput"] input {
-        background: rgba(255,255,255,0.06) !important;
-        border: 1px solid rgba(255,255,255,0.15) !important;
-        border-radius: 999px !important;
-        color: #fff !important;
+        font-family: 'Source Serif 4', serif !important;
+        background: rgba(255,255,255,0.6) !important;
+        border: 1px solid var(--rule) !important;
+        border-radius: 2px !important;
+        color: var(--ink) !important;
         text-align: center;
-        font-weight: 600;
+        font-weight: 400;
+        letter-spacing: 0.05em;
     }
     [data-testid="stDateInput"] input:focus {
-        border-color: #7c3aed !important;
-        box-shadow: 0 0 0 2px rgba(124,58,237,0.35) !important;
+        border-color: var(--gold) !important;
+        box-shadow: 0 0 0 2px rgba(184,150,62,0.2) !important;
     }
     </style>
     """,
@@ -284,9 +353,9 @@ titulo = f"{dia} de {SPANISH_MONTHS[mes]}"
 st.markdown(
     f"""
     <div class="hero">
-        <div class="emoji">🌍</div>
+        <div class="kicker">🌍 &nbsp; Un día en el mundo</div>
         <h1>{titulo}</h1>
-        <p>esto pasó en la historia</p>
+        <div class="sub">esto ocurrió en la historia</div>
     </div>
     """,
     unsafe_allow_html=True,
