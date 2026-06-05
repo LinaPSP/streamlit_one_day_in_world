@@ -1,4 +1,4 @@
-# 🌍 Un día como hoy
+# 🌍 Un día en el mundo
 
 <p align="center">
   <img src="https://img.shields.io/badge/Streamlit-App-ff4b4b?style=for-the-badge&logo=streamlit&logoColor=white" alt="Streamlit">
@@ -6,68 +6,43 @@
   <img src="https://img.shields.io/badge/Wikimedia-API-006699?style=for-the-badge&logo=wikipedia&logoColor=white" alt="Wikimedia API">
 </p>
 
-<p align="center">
-  Una app en Streamlit para descubrir eventos, nacimientos y muertes históricas de cualquier día del año.
-</p>
+**Un día en el mundo** es un sistema diseñado para facilitar la búsqueda de hechos históricos de forma organizada y sencilla. El proyecto resuelve la dificultad de encontrar información clara sobre sucesos del pasado en internet mediante una herramienta automática y fácil de usar.
 
 ---
 
 ## ✨ Qué hace
 
-- Muestra hechos históricos del día seleccionado
-- Organiza la información en `Eventos`, `Nacimientos` y `Muertes`
-- Permite filtrar por rango de años
-- Incluye un botón `Hoy`
-- Incluye un botón `🎲 Sorpréndeme` para explorar fechas al azar
-- Enlaza a Wikipedia cuando el dato lo permite
+- Encuentra hechos históricos de cualquier día del año automáticamente.
+- Organiza la información en categorías claras para facilitar su lectura.
+- Permite filtrar los resultados por años para una búsqueda más precisa.
+- Incluye opciones para ver hechos del día actual o explorar fechas al azar.
+- Se conecta directamente con Wikipedia para ofrecer información real y verificada.
 
 ## 🔗 Enlaces
 
-- Repositorio: [github.com/LinaPSP/streamlit_one_day_in_world](https://github.com/LinaPSP/streamlit_one_day_in_world)
-- App desplegada: [apponedayinworld.streamlit.app](https://apponedayinworld.streamlit.app/)
+- **App desplegada:** [apponedayinworld.streamlit.app](https://apponedayinworld.streamlit.app/)
+- **Repositorio:** [github.com/LinaPSP/streamlit_one_day_in_world](https://github.com/LinaPSP/streamlit_one_day_in_world)
 
-## 🧠 Enfoque del ejercicio
+## 🧠 Proceso de Desarrollo
 
-Este proyecto también sirve como ejercicio académico de lógica y estructuras de control.
+Este proyecto no es solo una aplicación técnica; es el resultado de un proceso de diseño de tres etapas pensado para el aprendizaje:
 
-En [app.py](/mnt/c/Users/Lina/Documents/un-dia-en-el-mundo/app.py) se usan:
+1.  **Etapa 1: Base Técnica.** Creación del programa en Python y conexión con Wikipedia.
+2.  **Etapa 2: Diseño Visual.** Mejora de la apariencia de la página para que sea cómoda y profesional.
+3.  **Etapa 3: Funciones Avanzadas.** Propuesta de búsqueda por países y hechos relacionados.
 
-- `if` para controlar estado y errores
-- `for` para recorrer categorías y resultados
-- `try/except` para manejar respuestas incompletas de la API
+## 🚀 Cómo usarla
 
-La app resuelve un problema concreto de análisis de datos:
+1.  Instala las dependencias: `pip install -r requirements.txt`
+2.  Ejecuta la aplicación: `streamlit run app.py`
+3.  Abre la dirección que aparece en tu pantalla.
 
-- obtiene información desde una API externa
-- filtra resultados por año
-- clasifica la información
-- decide qué mostrar según el estado de los datos
+## 📁 Estructura del Proyecto
 
-## 🚀 Cómo ejecutarla
+- `app.py`: El corazón del programa y la interfaz de usuario.
+- `proyecto_final/`: Informe académico detallado en formato LaTeX.
+- `Miro_spec.md`: Guía para el tablero de diseño del proyecto.
 
-```bash
-pip install -r requirements.txt
-streamlit run app.py
-```
+## 📌 Nota Académica
 
-Luego abre la URL local que Streamlit muestra en consola.
-
-## 🧩 Stack
-
-- `Python`
-- `Streamlit`
-- `requests`
-- API oficial de Wikimedia
-
-## 📁 Archivos principales
-
-- [app.py](/mnt/c/Users/Lina/Documents/un-dia-en-el-mundo/app.py): lógica e interfaz de la app
-- [requirements.txt](/mnt/c/Users/Lina/Documents/un-dia-en-el-mundo/requirements.txt): dependencias del proyecto
-
-## 🛠️ Si algo falla
-
-Si Wikimedia no responde o no hay conexión, la aplicación muestra un mensaje de error amigable en lugar de romperse.
-
-## 📌 Nota
-
-La aplicación es pequeña a propósito: se entiende rápido, es defendible en una entrega académica y muestra lógica real sin complejidad innecesaria.
+La aplicación está diseñada para ser fácil de entender y defender en una entrega académica, mostrando cómo la tecnología puede ayudar a organizar el conocimiento histórico de manera inteligente y sencilla.
